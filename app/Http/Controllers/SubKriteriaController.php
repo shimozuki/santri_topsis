@@ -31,12 +31,17 @@ class SubKriteriaController extends Controller
                 'kriteria' => $item->nama,
                 'sub_kriteria' => $this->subKriteriaService->getWhereKriteria($item->id),
             ];
+
+            $id_kriteria = $item->id;
+            $code_kriteria = $item->kode;
         }
 
         return view('dashboard.sub_kriteria.index', [
             "judul" => $judul,
             "kriteria" => $kriteria,
             "data" => $data,
+            "id_kriteria" => $id_kriteria,
+            "code_kriteria" => $code_kriteria,
         ]);
     }
 

@@ -71,8 +71,8 @@
                     <form action="{{ route('sub_kriteria.simpan') }}" method="post" enctype="multipart/form-data">
                         <h3 class="font-bold text-lg">Tambah {{ $judul }} <span class="text-greenPrimary" id="title_add_button"></span></h3>
                             @csrf
-                            <input type="number" name="kriteria_id" id="kriteria_id_add_button" hidden>
-                            <input type="text" name="kode" id="kode_add_button" value="kode" hidden>
+                            <input type="number" name="kriteria_id" id="kriteria_id_add_button" value="{{ $id_kriteria }}" hidden>
+                            <input type="text" name="kode" id="kode_add_button" value="{{ $code_kriteria }}" hidden>
                             <div class="form-control w-full max-w-xs">
                                 <label class="label">
                                     <span class="label-text">Nama</span>
