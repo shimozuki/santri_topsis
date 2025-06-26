@@ -11,16 +11,19 @@ class Penilaian extends Model
 
     protected $table = "penilaian";
     protected $primaryKey = "id";
-    public $incrementing = "true";
-    // protected $keyType = "string";
-    public $timestamps = "true";
+    public $incrementing = true;
+    public $timestamps = true;
     protected $fillable = [
-        "sub_kriteria_id",
+        'objek_id',
+        'kriteria_id',
+        'sub_kriteria_id',
+        'user_id',
+        'nilai',
     ];
 
-    public function alternatif()
+    public function objek()
     {
-        return $this->belongsTo(Alternatif::class);
+        return $this->belongsTo(Objek::class, 'objek_id');
     }
 
     public function kriteria()
@@ -31,5 +34,10 @@ class Penilaian extends Model
     public function subKriteria()
     {
         return $this->belongsTo(SubKriteria::class);
+    }
+
+    public function user()
+    {
+        return $this->belongsTo(User::class);
     }
 }

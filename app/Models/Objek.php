@@ -18,8 +18,8 @@ class Objek extends Model
         "nama",
     ];
 
-    public function alternatif()
+    public function penilaian()
     {
-        return $this->hasMany(Alternatif::class);
+        return $this->hasMany(Penilaian::class, 'objek_id');
     }
 }

@@ -19,11 +19,10 @@
             </a>
         </li>
 
-        {{-- Data Master --}}
         <li class="w-full mt-6">
             <h6 class="pl-6 ml-2 font-bold leading-tight uppercase text-xs opacity-60">Master</h6>
         </li>
-
+        @if(Auth::user()->roles->pluck('name')->contains('admin') || Auth::user()->roles->pluck('name')->contains('kepala_sekolah'))
         <li class="mt-0.5 w-full">
             <a href="{{ route('kriteria') }}" class="{{ Request::is('dashboard/kriteria') ? 'shadow-soft-xl rounded-lg bg-white font-semibold text-dark' : '' }} py-2.7 text-sm ease-nav-brand my-0 mx-4 flex items-center whitespace-nowrap px-4 transition-colors">
                 <div class="{{ Request::is('dashboard/kriteria') ? 'bg-gradient-to-tl from-backgroundSecondary to-greenSecondary text-white' : '' }} shadow-soft-2xl mr-2 flex h-8 w-8 items-center justify-center rounded-lg bg-white bg-center stroke-0 text-center xl:p-2.5">
@@ -32,6 +31,7 @@
                 <span class="ml-1 duration-300 opacity-100 pointer-events-none ease-soft">Kriteria</span>
             </a>
         </li>
+        @if(Auth::user()->roles->pluck('name')->contains('admin'))
         <li class="mt-0.5 w-full">
             <a href="{{ route('sub_kriteria') }}" class="{{ Request::is('dashboard/sub_kriteria') ? 'shadow-soft-xl rounded-lg bg-white font-semibold text-dark' : '' }} py-2.7 text-sm ease-nav-brand my-0 mx-4 flex items-center whitespace-nowrap px-4 transition-colors">
                 <div class="{{ Request::is('dashboard/sub_kriteria') ? 'bg-gradient-to-tl from-backgroundSecondary to-greenSecondary text-white' : '' }} shadow-soft-2xl mr-2 flex h-8 w-8 items-center justify-center rounded-lg bg-white bg-center stroke-0 text-center xl:p-2.5">
@@ -40,34 +40,27 @@
                 <span class="ml-1 duration-300 opacity-100 pointer-events-none ease-soft">Sub Kriteria</span>
             </a>
         </li>
+        @endif
         <li class="mt-0.5 w-full">
             <a href="{{ route('objek') }}" class="{{ Request::is('dashboard/objek') ? 'shadow-soft-xl rounded-lg bg-white font-semibold text-dark' : '' }} py-2.7 text-sm ease-nav-brand my-0 mx-4 flex items-center whitespace-nowrap px-4 transition-colors">
                 <div class="{{ Request::is('dashboard/objek') ? 'bg-gradient-to-tl from-backgroundSecondary to-greenSecondary text-white' : '' }} shadow-soft-2xl mr-2 flex h-8 w-8 items-center justify-center rounded-lg bg-white bg-center stroke-0 text-center xl:p-2.5">
                     <i class="ri-brackets-fill text-greenPrimary"></i>
                 </div>
-                <span class="ml-1 duration-300 opacity-100 pointer-events-none ease-soft">Objek</span>
+                <span class="ml-1 duration-300 opacity-100 pointer-events-none ease-soft">Santri</span>
             </a>
         </li>
-
+        @endif
         {{-- Data TOPSIS --}}
         <li class="w-full mt-6">
             <h6 class="pl-6 ml-2 font-bold leading-tight uppercase text-xs opacity-60">TOPSIS</h6>
         </li>
-
+        @if(Auth::user()->roles->pluck('name')->contains('admin') || Auth::user()->roles->pluck('name')->contains('kepala_sekolah'))
         <li class="mt-0.5 w-full">
             <a href="{{ route('alternatif') }}" class="{{ Request::is('dashboard/alternatif') ? 'shadow-soft-xl rounded-lg bg-white font-semibold text-dark' : '' }} py-2.7 text-sm ease-nav-brand my-0 mx-4 flex items-center whitespace-nowrap px-4 transition-colors">
                 <div class="{{ Request::is('dashboard/alternatif') ? 'bg-gradient-to-tl from-backgroundSecondary to-greenSecondary text-white' : '' }} shadow-soft-2xl mr-2 flex h-8 w-8 items-center justify-center rounded-lg bg-white bg-center stroke-0 text-center xl:p-2.5">
                     <i class="ri-braces-fill text-greenPrimary"></i>
                 </div>
-                <span class="ml-1 duration-300 opacity-100 pointer-events-none ease-soft">Santri</span>
-            </a>
-        </li>
-        <li class="mt-0.5 w-full">
-            <a href="{{ route('penilaian') }}" class="{{ Request::is('dashboard/penilaian*') ? 'shadow-soft-xl rounded-lg bg-white font-semibold text-dark' : '' }} py-2.7 text-sm ease-nav-brand my-0 mx-4 flex items-center whitespace-nowrap px-4 transition-colors">
-                <div class="{{ Request::is('dashboard/penilaian*') ? 'bg-gradient-to-tl from-backgroundSecondary to-greenSecondary text-white' : '' }} shadow-soft-2xl mr-2 flex h-8 w-8 items-center justify-center rounded-lg bg-white bg-center stroke-0 text-center xl:p-2.5">
-                    <i class="ri-survey-fill text-greenPrimary"></i>
-                </div>
-                <span class="ml-1 duration-300 opacity-100 pointer-events-none ease-soft">Penilaian</span>
+                <span class="ml-1 duration-300 opacity-100 pointer-events-none ease-soft">Alternatif</span>
             </a>
         </li>
         <li class="mt-0.5 w-full">
@@ -86,5 +79,16 @@
                 <span class="ml-1 duration-300 opacity-100 pointer-events-none ease-soft">Hasil Akhir</span>
             </a>
         </li>
+        @endif
+        @if(Auth::user()->roles->pluck('name')->contains('penguji_1') || Auth::user()->roles->pluck('name')->contains('penguji_2') || Auth::user()->roles->pluck('name')->contains('penguji_3'))
+        <li class="mt-0.5 w-full">
+            <a href="{{ route('penilaian') }}" class="{{ Request::is('dashboard/penilaian*') ? 'shadow-soft-xl rounded-lg bg-white font-semibold text-dark' : '' }} py-2.7 text-sm ease-nav-brand my-0 mx-4 flex items-center whitespace-nowrap px-4 transition-colors">
+                <div class="{{ Request::is('dashboard/penilaian*') ? 'bg-gradient-to-tl from-backgroundSecondary to-greenSecondary text-white' : '' }} shadow-soft-2xl mr-2 flex h-8 w-8 items-center justify-center rounded-lg bg-white bg-center stroke-0 text-center xl:p-2.5">
+                    <i class="ri-survey-fill text-greenPrimary"></i>
+                </div>
+                <span class="ml-1 duration-300 opacity-100 pointer-events-none ease-soft">Penilaian</span>
+            </a>
+        </li>
+        @endif
     </ul>
 </aside>

@@ -39,7 +39,7 @@ Route::group([
     "middleware" => ['auth'],
     "prefix" => "dashboard"
 
-], function() {
+], function () {
     Route::get('/', [DashboardController::class, 'index'])->name('dashboard');
 
     Route::group([
@@ -85,11 +85,10 @@ Route::group([
         'prefix' => 'penilaian'
     ], function () {
         Route::get('/', [PenilaianController::class, 'index'])->name('penilaian');
-        Route::post('/simpan', [PenilaianController::class, 'simpan'])->name('penilaian.simpan');
         Route::get('/ubah/{alternatif_id}', [PenilaianController::class, 'ubah'])->name('penilaian.ubah');
         Route::post('/ubah/{alternatif_id}', [PenilaianController::class, 'perbarui'])->name('penilaian.perbarui');
         Route::post('/hapus', [PenilaianController::class, 'hapus'])->name('penilaian.hapus');
-
+        Route::post('/dashboard/penilaian/simpan', [PenilaianController::class, 'simpan'])->name('penilaian.simpan');
     });
 
     Route::get('/perhitungan', [TopsisController::class, 'index'])->name('perhitungan');
@@ -99,4 +98,4 @@ Route::group([
     Route::get('/hasil_akhir', [TopsisController::class, 'hasilAkhir'])->name('hasil_akhir');
 });
 
-require __DIR__.'/auth.php';
+require __DIR__ . '/auth.php';
