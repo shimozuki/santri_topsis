@@ -8,7 +8,7 @@ use App\Http\Repositories\PenilaianRepository;
 class KriteriaService
 {
     protected $kriteriaRepository, $penilaianRepository;
-    
+
     public function __construct(KriteriaRepository $kriteriaRepository, PenilaianRepository $penilaianRepository)
     {
         $this->kriteriaRepository = $kriteriaRepository;
@@ -38,7 +38,7 @@ class KriteriaService
         $validate = $request->validated();
 
         $cekBobot = $validate['bobot'] + $this->getSumBobot()->total_bobot;
-        if ($cekBobot > 1) {
+        if ($cekBobot > 2) {
             return $data = [false, "Jumlah maksimal keseluruhan bobot yaitu 1!"];
         }
 
@@ -64,7 +64,7 @@ class KriteriaService
         if ($cekBobot > 1) {
             return $data = [false, "Jumlah maksimal keseluruhan bobot yaitu 1!"];
         }
-        
+
         $validate = $request->validated();
         $data = [true, $this->kriteriaRepository->perbarui($request->id, $validate)];
         return $data;

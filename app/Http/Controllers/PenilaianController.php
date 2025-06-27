@@ -34,18 +34,22 @@ class PenilaianController extends Controller
             'Tes Hafalan Qur\'an' => ['id' => null, 'penguji_ke' => 3],
         ];
 
-        // Map role user ke nama kriteria
-        $mapRoleNama = [
-            'penguji_1' => 'Tes Wawancara',
-            'penguji_2' => 'Tes Tulis',
-            'penguji_3' => 'Tes Al-Quran',
+        // Map kode kriteria ke role
+        $mapKodeKriteriaToRole = [
+            'C001' => 'penguji_1', // Tes Wawancara
+            'C002' => 'penguji_2', // Tes Tulis
+            'C003' => 'penguji_3', // Tes Al-Quran
+            'C004' => 'admin',     // Kriteria lain yang diinput admin
         ];
+
+        // 🔧 Generate map kebalikan: role → kode kriteria
+        $mapRoleNama = array_flip($mapKodeKriteriaToRole);
 
         // Ambil role aktif user
         $userRoles = $user->roles->pluck('name');
         $userRole = null;
 
-        foreach ($mapRoleNama as $role => $namaKriteria) {
+        foreach ($mapRoleNama as $role => $kodeKriteria) {
             if ($userRoles->contains($role)) {
                 $userRole = $role;
                 break;
@@ -56,8 +60,8 @@ class PenilaianController extends Controller
             abort(403, 'Role penguji tidak dikenali.');
         }
 
-        $namaKriteria = $mapRoleNama[$userRole];
-        $kriteriaAktif = Kriteria::where('nama', $namaKriteria)->firstOrFail();
+        $kodeKriteria = $mapRoleNama[$userRole];
+        $kriteriaAktif = Kriteria::where('kode', $kodeKriteria)->firstOrFail();
 
         // Lengkapi ID kriteria untuk mapKriteria (opsional untuk tampilan)
         foreach ($mapKriteria as $nama => &$item) {
@@ -88,6 +92,7 @@ class PenilaianController extends Controller
             'kriteriaAktif'
         ));
     }
+
 
     // app/Http/Controllers/PenilaianController.php
 

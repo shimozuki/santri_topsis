@@ -29,6 +29,14 @@
     'pengujiKe' => $mapKriteria["Tes Hafalan Qur'an"]['penguji_ke'],
     ])
     @endif
+    @if (Auth::user()->roles->pluck('name')->contains('admin'))
+    <h4 class="mb-3 font-bold">Tes Lain (Admin)</h4>
+    @include('dashboard.penilaian._tabel', [
+    'objek' => $objek,
+    'kriteriaId' => $mapKriteria['Tes Lain']['id'] ?? null,
+    'pengujiKe' => $mapKriteria['Tes Lain']['penguji_ke'] ?? null,
+    ])
+    @endif
 
 </div>
 

@@ -8,6 +8,7 @@ use App\Http\Services\KriteriaService;
 use App\Http\Services\PenilaianService;
 use App\Models\Objek;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Http\Request;
 
 class TopsisController extends Controller
 {
@@ -20,15 +21,26 @@ class TopsisController extends Controller
         $this->kriteriaService = $kriteriaService;
     }
 
-    public function hasilAkhir()
+    public function hasilAkhir(Request $request)
     {
         $judul = "Hasil Akhir";
-        $hasilTopsis = $this->topsisServices->getHasilTopsis();
+        $jenjang = $request->get('jenjang');
 
-        return view('dashboard.hasil_akhir.index', [
-            'judul' => $judul,
-            'hasilTopsis' => $hasilTopsis,
-        ]);
+
+        $query = DB::table('hasil_solusi_topsis as hst')
+            ->join('objek as o', 'o.id', 'hst.objek_id')
+            ->select('hst.*', 'o.nama as nama_objek', 'o.jenjang');
+
+        if ($jenjang) {
+            $query->whereIn('hst.objek_id', function ($q) use ($jenjang) {
+                $q->select('id')->from('objek')->where('jenjang', $jenjang);
+            });
+        }
+
+        $hasilTopsis = $query->orderBy('hst.id', 'asc')->get();
+
+        return view('dashboard.hasil_akhir.index', compact('judul', 'hasilTopsis', 'jenjang'))
+            ->with('batasMinimal', 0.5);
     }
 
     public function index()

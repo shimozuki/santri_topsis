@@ -22,7 +22,7 @@
                         </button>
                     </form>
                     @endif
-
+                    @if(Auth::user()->roles->pluck('name')->contains('kepala_sekolah') && !$isApproved)
                     {{-- Tombol Export PDF --}}
                     @if($isApproved)
                     <form action="{{ 'pdf_hasil' }}" method="post" enctype="multipart/form-data" target="_blank">
@@ -33,12 +33,20 @@
                         </button>
                     </form>
                     @endif
+                    @endif
                 </div>
             </div>
             <div id='recipients' class="p-8 rounded shadow bg-white">
                 @php
                 $batasMinimal = 0.5; // batas minimum nilai untuk diterima
                 @endphp
+                <form method="GET" action="{{ route('hasil_akhir') }}" class="mb-4">
+                    <select name="jenjang" onchange="this.form.submit()" class="form-select w-1/3">
+                        <option value="">-- Semua Jenjang --</option>
+                        <option value="SMP" {{ request('jenjang') == 'SMP' ? 'selected' : '' }}>SMP</option>
+                        <option value="SMA" {{ request('jenjang') == 'SMA' ? 'selected' : '' }}>SMA</option>
+                    </select>
+                </form>
                 <table class="min-w-full divide-y divide-gray-200 text-sm text-gray-700">
                     <thead class="bg-gray-100">
                         <tr>
@@ -48,7 +56,7 @@
                         </tr>
                     </thead>
                     <tbody class="divide-y divide-gray-100">
-                        @foreach ($hasilTopsis->sortByDesc('nilai') as $item)
+                        @forelse ($hasilTopsis->sortByDesc('nilai') as $item)
                         <tr class="hover:bg-gray-50">
                             <td class="px-4 py-2">{{ $item->nama_objek }}</td>
                             <td class="px-4 py-2">{{ number_format($item->nilai, 3) }}</td>
@@ -60,7 +68,11 @@
                                 @endif
                             </td>
                         </tr>
-                        @endforeach
+                        @empty
+                        <tr>
+                            <td colspan="3" class="text-center text-gray-500">Belum ada data hasil untuk jenjang ini.</td>
+                        </tr>
+                        @endforelse
                     </tbody>
                 </table>
             </div>
