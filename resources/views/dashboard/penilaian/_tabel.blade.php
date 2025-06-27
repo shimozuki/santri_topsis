@@ -8,6 +8,16 @@
                 <h4 class="text-lg font-semibold text-gray-800">
                     {{ $judul ?? 'Penilaian Santri' }}
                 </h4>
+                <form method="GET" action="{{ route('penilaian') }}" class="mt-2">
+                    <div class="flex items-center space-x-2">
+                        <label for="jenjang" class="text-sm font-medium text-gray-700">Filter Jenjang:</label>
+                        <select name="jenjang" id="jenjang" class="form-select rounded border-gray-300 text-sm" onchange="this.form.submit()">
+                            <option value="">-- Semua --</option>
+                            <option value="SMP" {{ request('jenjang') == 'SMP' ? 'selected' : '' }}>SMP</option>
+                            <option value="SMA" {{ request('jenjang') == 'SMA' ? 'selected' : '' }}>SMA</option>
+                        </select>
+                    </div>
+                </form>
             </div>
 
             <div class="p-4 overflow-x-auto">

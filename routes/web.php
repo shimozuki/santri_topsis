@@ -24,7 +24,8 @@ use Illuminate\Support\Facades\Route;
 Route::get('/', function () {
     return view('auth.login');
 });
-
+Route::get('register/santri', [SantriRegisterController::class, 'showForm'])->name('register.santri.form');
+Route::post('register/santri', [SantriRegisterController::class, 'register'])->name('register.santri');
 // Route::get('/dashboard2', function () {
 //     return view('dashboard');
 // })->middleware(['auth', 'verified'])->name('dashboard2');

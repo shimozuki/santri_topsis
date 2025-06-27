@@ -22,7 +22,7 @@ class PenilaianController extends Controller
         $this->subKriteriaService = $subKriteriaService;
     }
 
-    public function index()
+    public function index(Request $request)
     {
         $judul = "Penilaian Santri";
         $user = auth()->user();
@@ -36,16 +36,13 @@ class PenilaianController extends Controller
 
         // Map kode kriteria ke role
         $mapKodeKriteriaToRole = [
-            'C001' => 'penguji_1', // Tes Wawancara
-            'C002' => 'penguji_2', // Tes Tulis
-            'C003' => 'penguji_3', // Tes Al-Quran
-            'C004' => 'admin',     // Kriteria lain yang diinput admin
+            'C001' => 'penguji_1',
+            'C002' => 'penguji_2',
+            'C003' => 'penguji_3',
+            'C004' => 'admin',
         ];
 
-        // 🔧 Generate map kebalikan: role → kode kriteria
         $mapRoleNama = array_flip($mapKodeKriteriaToRole);
-
-        // Ambil role aktif user
         $userRoles = $user->roles->pluck('name');
         $userRole = null;
 
@@ -63,33 +60,40 @@ class PenilaianController extends Controller
         $kodeKriteria = $mapRoleNama[$userRole];
         $kriteriaAktif = Kriteria::where('kode', $kodeKriteria)->firstOrFail();
 
-        // Lengkapi ID kriteria untuk mapKriteria (opsional untuk tampilan)
         foreach ($mapKriteria as $nama => &$item) {
             $kriteria = Kriteria::where('nama', $nama)->first();
             if ($kriteria) {
                 $item['id'] = $kriteria->id;
             }
         }
-        unset($item); // hapus reference agar aman
+        unset($item);
 
-        // Ambil semua sub_kriteria untuk kriteria aktif
         $subKriteria = SubKriteria::where('kriteria_id', $kriteriaAktif->id)->get();
 
-        // Ambil semua objek santri dan penilaiannya dari user ini
-        $objek = Objek::with([
+        // Ambil filter jenjang dari URL (ex: ?jenjang=SMA)
+        $jenjang = $request->jenjang;
+
+        $objekQuery = Objek::with([
             'penilaian' => function ($q) use ($kriteriaAktif, $user) {
                 $q->where('kriteria_id', $kriteriaAktif->id)
                     ->where('user_id', $user->id);
             },
             'penilaian.subKriteria'
-        ])->get();
+        ]);
+
+        if ($jenjang) {
+            $objekQuery->where('jenjang', $jenjang);
+        }
+
+        $objek = $objekQuery->get();
 
         return view('dashboard.penilaian.index', compact(
             'judul',
             'objek',
             'mapKriteria',
             'subKriteria',
-            'kriteriaAktif'
+            'kriteriaAktif',
+            'jenjang' // untuk tetap menandai dropdown terpilih
         ));
     }
 
