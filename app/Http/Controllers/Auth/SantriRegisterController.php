@@ -33,7 +33,10 @@ class SantriRegisterController extends Controller
         ]);
 
         // Tambahkan role santri
-        $user->assignRole('santri');
+        \DB::table('role_user')->insert([
+            'user_id' => $user->id,
+            'role_id' => 6, // id role santri
+        ]);
 
         // Tambahkan ke tabel objek
         Objek::create([

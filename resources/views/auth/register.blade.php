@@ -23,6 +23,11 @@
             <x-input-error :messages="$errors->get('password')" class="mt-2" />
         </div>
 
+        <div class="mt-4">
+            <x-input-label for="password_confirmation" :value="__('Konfirmasi Password')" />
+            <x-text-input id="password_confirmation" class="block mt-1 w-full" type="password" name="password_confirmation" required />
+        </div>
+
         <!-- Jenjang -->
         <div class="mt-4">
             <x-input-label for="jenjang" :value="__('Jenjang')" />
