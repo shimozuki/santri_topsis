@@ -20,7 +20,7 @@ class PenilaianRepository
 
     public function getAll()
     {
-        $data = $this->penilaian->with('alternatif', 'kriteria', 'subKriteria')->orderBy('id', 'asc')->get();
+        $data = $this->penilaian->with('objek', 'kriteria', 'subKriteria')->orderBy('id', 'asc')->get();
         return $data;
     }
 
@@ -32,7 +32,7 @@ class PenilaianRepository
 
     public function perbarui($data)
     {
-        // dd($data->all());
+
         $responses = [];
         foreach ($this->kriteria->get() as $value => $item) {
             $responses[] = $this->penilaian->where('alternatif_id', $data->alternatif_id)->where('kriteria_id', $item->id)->update([

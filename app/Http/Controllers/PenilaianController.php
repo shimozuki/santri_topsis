@@ -38,7 +38,7 @@ class PenilaianController extends Controller
         $mapRoleNama = [
             'penguji_1' => 'Tes Wawancara',
             'penguji_2' => 'Tes Tulis',
-            'penguji_3' => 'Tes Hafalan Qur\'an',
+            'penguji_3' => 'Tes Al-Quran',
         ];
 
         // Ambil role aktif user
@@ -89,30 +89,26 @@ class PenilaianController extends Controller
         ));
     }
 
-
-
-
     // app/Http/Controllers/PenilaianController.php
 
     public function simpan(Request $request)
     {
-        $request->validate([
-            'objek_id' => 'required|exists:objek,id',
-            'kriteria_id' => 'required|exists:kriteria,id',
-            'sub_kriteria_id' => 'required|exists:sub_kriteria,id',
-            'nilai' => 'required|numeric|min:0|max:100',
-        ]);
-        Penilaian::updateOrCreate(
-            [
-                'objek_id' => $request->objek_id,
-                'kriteria_id' => $request->kriteria_id,
-                'sub_kriteria_id' => $request->sub_kriteria_id,
-                'user_id' => auth()->id(),
-            ],
-            [
-                'nilai' => $request->nilai,
-            ]
-        );
+        $subIds = $request->sub_kriteria_id;
+        $nilaiList = $request->nilai;
+
+        foreach ($subIds as $i => $subId) {
+            Penilaian::updateOrCreate(
+                [
+                    'objek_id' => $request->objek_id,
+                    'kriteria_id' => $request->kriteria_id,
+                    'sub_kriteria_id' => $subId,
+                    'user_id' => auth()->id(),
+                ],
+                [
+                    'nilai' => $nilaiList[$i],
+                ]
+            );
+        }
 
         return redirect()->back()->with('success', 'Penilaian berhasil disimpan.');
     }

@@ -6,6 +6,8 @@ use Barryvdh\DomPDF\Facade\PDF;
 use App\Http\Services\TopsisService;
 use App\Http\Services\KriteriaService;
 use App\Http\Services\PenilaianService;
+use App\Models\Objek;
+use Illuminate\Support\Facades\DB;
 
 class TopsisController extends Controller
 {
@@ -56,6 +58,7 @@ class TopsisController extends Controller
             'solusiIdealPositif' => $solusiIdealPositif,
             'solusiIdealNegatif' => $solusiIdealNegatif,
             'hasilTopsis' => $hasilTopsis,
+            'daftarSantri' => Objek::all(),
         ]);
     }
 
@@ -130,21 +133,22 @@ class TopsisController extends Controller
     public function hitungMatriksKeputusan()
     {
         $penilaian = $this->penilaianService->getAll();
-        foreach ($penilaian->unique('kriteria_id') as $item) {
-            $penilaianKriteria = $penilaian->where('kriteria_id', $item->kriteria_id);
+        $kriteriaList = $penilaian->pluck('kriteria_id')->unique();
+
+        foreach ($kriteriaList as $kriteriaId) {
+            $penilaianKriteria = $penilaian->where('kriteria_id', $kriteriaId);
+            $objekIds = $penilaianKriteria->pluck('objek_id')->unique();
+
             $hitungMatriks = 0;
 
-            foreach ($penilaianKriteria as $value) {
-                if ($value->sub_kriteria_id == null) {
-                    abort(403, "Masukkan nilai alternatif ". $value->alternatif->objek->nama ."!");
-                }
-                $hitungMatriks += pow($value->subKriteria->nilai, 2);
+            foreach ($objekIds as $objekId) {
+                $rata2 = $penilaianKriteria->where('objek_id', $objekId)->avg('nilai');
+                $hitungMatriks += pow($rata2, 2);
             }
 
-            $hitungMatriks = sqrt($hitungMatriks);
             $data = [
-                'kriteria_id' => $item->kriteria_id,
-                'nilai' => $hitungMatriks,
+                'kriteria_id' => $kriteriaId,
+                'nilai' => sqrt($hitungMatriks),
             ];
 
             $this->topsisServices->simpanMatriksKeputusan($data);
@@ -154,21 +158,32 @@ class TopsisController extends Controller
     public function hitungMatriksNormalisasi()
     {
         $penilaian = $this->penilaianService->getAll();
+
         foreach ($penilaian->unique('kriteria_id') as $item) {
             $penilaianKriteria = $penilaian->where('kriteria_id', $item->kriteria_id);
             $matriksKeputusan = $this->topsisServices->getMatriksKeputusanKriteria($item->kriteria_id);
 
-            foreach ($penilaianKriteria as $value) {
-                $matriksNormalisasi = $value->subKriteria->nilai / $matriksKeputusan->nilai;
+            // ambil semua objek (santri)
+            $objekIds = $penilaianKriteria->pluck('objek_id')->unique();
+
+            foreach ($objekIds as $objekId) {
+                $nilaiRata2 = $penilaianKriteria
+                    ->where('objek_id', $objekId)
+                    ->avg('nilai');
+
+                $matriksNormalisasi = $nilaiRata2 / $matriksKeputusan->nilai;
+
                 $data = [
                     'nilai' => $matriksNormalisasi,
-                    'kriteria_id' => $value->kriteria_id,
-                    'alternatif_id' => $value->alternatif_id,
+                    'kriteria_id' => $item->kriteria_id,
+                    'objek_id' => $objekId,
                 ];
+
                 $this->topsisServices->simpanMatriksNormalisasi($data);
             }
         }
     }
+
 
     public function hitungMatriksY()
     {
@@ -182,7 +197,7 @@ class TopsisController extends Controller
                 $data = [
                     'nilai' => $matriksY,
                     'kriteria_id' => $value->kriteria_id,
-                    'alternatif_id' => $value->alternatif_id,
+                    'objek_id' => $value->objek_id,
                 ];
                 $this->topsisServices->simpanMatriksY($data);
             }
@@ -207,7 +222,7 @@ class TopsisController extends Controller
                 $dataPositif = [
                     'nilai' => $idealPositif,
                     'kriteria_id' => $value->kriteria_id,
-                    'alternatif_id' => $value->alternatif_id,
+                    'objek_id' => $value->objek_id,
                 ];
                 $this->topsisServices->simpanIdealPositif($dataPositif);
 
@@ -215,7 +230,7 @@ class TopsisController extends Controller
                 $dataNegatif = [
                     'nilai' => $idealNegatif,
                     'kriteria_id' => $value->kriteria_id,
-                    'alternatif_id' => $value->alternatif_id,
+                    'objek_id' => $value->objek_id,
                 ];
                 $this->topsisServices->simpanIdealNegatif($dataNegatif);
             }
@@ -228,7 +243,7 @@ class TopsisController extends Controller
         $jarakIdealNegatif = $this->topsisServices->getIdealNegatif();
 
         foreach ($jarakIdealPositif as $item) {
-            $jarakIdealPositifSi = $jarakIdealPositif->where('alternatif_id', $item->alternatif_id);
+            $jarakIdealPositifSi = $jarakIdealPositif->where('objek_id', $item->objek_id);
             $nilaiPositifSi = 0;
 
             foreach ($jarakIdealPositifSi as $value) {
@@ -236,13 +251,13 @@ class TopsisController extends Controller
             }
             $data = [
                 'nilai' => sqrt($nilaiPositifSi),
-                'alternatif_id' => $item->alternatif_id,
+                'objek_id' => $item->objek_id,
             ];
             $this->topsisServices->simpanSolusiIdealPositif($data);
         }
 
         foreach ($jarakIdealNegatif as $item) {
-            $jarakIdealNegatifSi = $jarakIdealNegatif->where('alternatif_id', $item->alternatif_id);
+            $jarakIdealNegatifSi = $jarakIdealNegatif->where('objek_id', $item->objek_id);
             $nilaiNegatifSi = 0;
 
             foreach ($jarakIdealNegatifSi as $value) {
@@ -250,7 +265,7 @@ class TopsisController extends Controller
             }
             $data = [
                 'nilai' => sqrt($nilaiNegatifSi),
-                'alternatif_id' => $item->alternatif_id,
+                'objek_id' => $item->objek_id,
             ];
             $this->topsisServices->simpanSolusiIdealNegatif($data);
         }
@@ -267,29 +282,47 @@ class TopsisController extends Controller
 
         foreach ($solusiIdealPositif as $item) {
             $dataPositif[] = [
-                'alternatif_id' => $item->alternatif_id,
+                'objek_id' => $item->objek_id,
                 'nilai' => $item->nilai,
             ];
         }
 
         foreach ($solusiIdealNegatif as $item) {
             $dataNegatif[] = [
-                'alternatif_id' => $item->alternatif_id,
+                'objek_id' => $item->objek_id,
                 'nilai' => $item->nilai,
             ];
         }
 
         foreach ($dataPositif as $item) {
             foreach ($dataNegatif as $value) {
-                if ($value['alternatif_id'] == $item['alternatif_id']) {
+                if ($value['objek_id'] == $item['objek_id']) {
                     $hitung = [
-                        'alternatif_id' => $item['alternatif_id'],
+                        'objek_id' => $item['objek_id'],
                         'nilai' => $value['nilai'] / ($item['nilai'] + $value['nilai']),
                     ];
                 }
             }
+            $status = $hitung['nilai'] >= 0.75 ? 'DITERIMA' : 'TIDAK DITERIMA';
+            $hitung['status'] = $status;
             $this->topsisServices->simpanHasilTopsis($hitung);
             $hitung = [];
         }
+    }
+
+    public function approve()
+    {
+        // Validasi role jika perlu
+        if (!auth()->user()->roles->pluck('name')->contains('kepala_sekolah')) {
+            abort(403);
+        }
+
+        // Update status hasil topsis menjadi "disetujui"
+        \DB::table('hasil_solusi_topsis')->update([
+            'status' => 'disetujui',
+            'updated_at' => now()
+        ]);
+
+        return redirect()->back()->with('success', 'Hasil perhitungan disetujui.');
     }
 }

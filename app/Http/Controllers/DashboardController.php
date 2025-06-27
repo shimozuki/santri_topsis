@@ -35,7 +35,7 @@ class DashboardController extends Controller
         $hasilAlternatif = "";
         $hasilNilai = "";
         foreach ($hasilTopsis as $item) {
-            $hasilAlternatif .= $item->alternatif_id . ", ";
+            $hasilAlternatif .= property_exists($item, 'objek_id') ? $item->objek_id . ", " : '-, ';
             $hasilNilai .= number_format($item->nilai, 3) . ", ";
         }
         $hasilAlternatif = rtrim($hasilAlternatif, ", ");

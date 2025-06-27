@@ -53,20 +53,21 @@
 
 @section('js')
 <script>
-    function bukaModalNilai(objek_id, kriteria_id, sub_kriteria_id = null) {
-        document.getElementById('inputObjek').value = objek_id;
-        document.getElementById('inputKriteria').value = kriteria_id;
-        if (sub_kriteria_id !== null) {
-            document.getElementById('inputSubKriteria').value = sub_kriteria_id;
+    function bukaModalNilai(objekId, kriteriaId) {
+        const modal = document.getElementById("modalNilai");
+        const inputObjek = document.getElementById("inputObjek");
+        const inputKriteria = document.getElementById("inputKriteria");
+
+        if (!modal || !inputObjek || !inputKriteria) {
+            console.error("Elemen modal/input tidak ditemukan");
+            return;
         }
-        document.getElementById('inputNilai').value = '';
 
-        const modal = document.getElementById('modalNilai');
-        modal.classList.remove('hidden');
-        modal.classList.add('flex');
-
-        console.log('Modal Nilai dibuka untuk objek_id:', objek_id, 'kriteria_id:', kriteria_id, 'sub_kriteria_id:', sub_kriteria_id);
+        inputObjek.value = objekId;
+        inputKriteria.value = kriteriaId;
+        modal.classList.remove("hidden");
     }
+
 
 
     function tutupModalNilai() {

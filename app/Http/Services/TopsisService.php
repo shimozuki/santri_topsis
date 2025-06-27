@@ -29,7 +29,6 @@ class TopsisService
         $validate = $this->topsisRepository->getMatriksKeputusanKriteria($data['kriteria_id']);
         if ($validate == null) {
             $result = $this->topsisRepository->addMatriksKeputusan($data);
-
         } elseif ($validate != null) {
             $result = $this->topsisRepository->updateMatriksKeputusan($data);
         }
@@ -45,10 +44,9 @@ class TopsisService
     }
     public function simpanMatriksNormalisasi($data)
     {
-        $validate = $this->topsisRepository->getMatriksNormalisasiKriteriaAlternatif($data['kriteria_id'], $data['alternatif_id']);
+        $validate = $this->topsisRepository->getMatriksNormalisasiKriteriaAlternatif($data['kriteria_id'], $data['objek_id']);
         if ($validate == null) {
             $this->topsisRepository->addMatriksNormalisasi($data);
-
         } elseif ($validate != null) {
             $this->topsisRepository->updateMatriksNormalisasi($data);
         }
@@ -67,10 +65,9 @@ class TopsisService
     }
     public function simpanMatriksY($data)
     {
-        $validate = $this->topsisRepository->getMatriksYKriteriaAlternatif($data['kriteria_id'], $data['alternatif_id']);
+        $validate = $this->topsisRepository->getMatriksYKriteriaAlternatif($data['kriteria_id'], $data['objek_id']);
         if ($validate == null) {
             $this->topsisRepository->addMatriksY($data);
-
         } elseif ($validate != null) {
             $this->topsisRepository->updateMatriksY($data);
         }
@@ -84,10 +81,9 @@ class TopsisService
     }
     public function simpanIdealPositif($data)
     {
-        $validate = $this->topsisRepository->getIdealPositifKriteriaAlternatif($data['kriteria_id'], $data['alternatif_id']);
+        $validate = $this->topsisRepository->getIdealPositifKriteriaAlternatif($data['kriteria_id'], $data['objek_id']);
         if ($validate == null) {
             $this->topsisRepository->addIdealPositif($data);
-
         } elseif ($validate != null) {
             $this->topsisRepository->updateIdealPositif($data);
         }
@@ -99,10 +95,9 @@ class TopsisService
     }
     public function simpanIdealNegatif($data)
     {
-        $validate = $this->topsisRepository->getIdealNegatifKriteriaAlternatif($data['kriteria_id'], $data['alternatif_id']);
+        $validate = $this->topsisRepository->getIdealNegatifKriteriaAlternatif($data['kriteria_id'], $data['objek_id']);
         if ($validate == null) {
             $this->topsisRepository->addIdealNegatif($data);
-
         } elseif ($validate != null) {
             $this->topsisRepository->updateIdealNegatif($data);
         }
@@ -116,10 +111,9 @@ class TopsisService
     }
     public function simpanSolusiIdealPositif($solusiIdealPositif)
     {
-        $validate = $this->topsisRepository->getSolusiIdealPositifKriteria($solusiIdealPositif['alternatif_id']);
+        $validate = $this->topsisRepository->getSolusiIdealPositifKriteria($solusiIdealPositif['objek_id']);
         if ($validate == null) {
             $this->topsisRepository->addSolusiIdealPositif($solusiIdealPositif);
-
         } elseif ($validate != null) {
             $this->topsisRepository->updateSolusiIdealPositif($solusiIdealPositif);
         }
@@ -131,10 +125,9 @@ class TopsisService
     }
     public function simpanSolusiIdealNegatif($solusiIdealNegatif)
     {
-        $validate = $this->topsisRepository->getSolusiIdealNegatifKriteria($solusiIdealNegatif['alternatif_id']);
+        $validate = $this->topsisRepository->getSolusiIdealNegatifKriteria($solusiIdealNegatif['objek_id']);
         if ($validate == null) {
             $this->topsisRepository->addSolusiIdealNegatif($solusiIdealNegatif);
-
         } elseif ($validate != null) {
             $this->topsisRepository->updateSolusiIdealNegatif($solusiIdealNegatif);
         }
@@ -148,10 +141,9 @@ class TopsisService
     }
     public function simpanHasilTopsis($data)
     {
-        $validate = $this->topsisRepository->getHasilTopsisAlternatif($data['alternatif_id']);
+        $validate = $this->topsisRepository->getHasilTopsisAlternatif($data['objek_id']);
         if ($validate == null) {
             $this->topsisRepository->addHasilTopsis($data);
-
         } elseif ($validate != null) {
             $this->topsisRepository->updateHasilTopsis($data);
         }
