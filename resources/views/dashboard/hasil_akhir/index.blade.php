@@ -38,8 +38,17 @@
             </div>
             <div id='recipients' class="p-8 rounded shadow bg-white">
                 @php
-                $batasMinimal = 0.5; // batas minimum nilai untuk diterima
+                use App\Models\KuotaSeleksi;
+
+                $jenjang = request('jenjang');
+                $tahun = now()->year;
+
+                // Ambil kuota berdasarkan jenjang dan tahun aktif
+                $kuota = $jenjang ? KuotaSeleksi::getKuota($jenjang, $tahun) : null;
+                $rank = 1;
                 @endphp
+
+                {{-- Filter Jenjang --}}
                 <form method="GET" action="{{ route('hasil_akhir') }}" class="mb-4">
                     <select name="jenjang" onchange="this.form.submit()" class="form-select w-1/3">
                         <option value="">-- Semua Jenjang --</option>
@@ -47,9 +56,19 @@
                         <option value="SMA" {{ request('jenjang') == 'SMA' ? 'selected' : '' }}>SMA</option>
                     </select>
                 </form>
+
+                {{-- Info jika kuota belum tersedia --}}
+                @if ($jenjang && !$kuota)
+                <div class="text-sm text-red-500 mb-3">
+                    Kuota belum ditentukan untuk jenjang <strong>{{ $jenjang }}</strong> tahun <strong>{{ $tahun }}</strong>.
+                </div>
+                @endif
+
+                {{-- Tabel Hasil --}}
                 <table class="min-w-full divide-y divide-gray-200 text-sm text-gray-700">
                     <thead class="bg-gray-100">
                         <tr>
+                            <th class="px-4 py-2 text-left font-semibold">Peringkat</th>
                             <th class="px-4 py-2 text-left font-semibold">Nama</th>
                             <th class="px-4 py-2 text-left font-semibold">Nilai</th>
                             <th class="px-4 py-2 text-left font-semibold">Keterangan</th>
@@ -58,24 +77,27 @@
                     <tbody class="divide-y divide-gray-100">
                         @forelse ($hasilTopsis->sortByDesc('nilai') as $item)
                         <tr class="hover:bg-gray-50">
+                            <td class="px-4 py-2 text-center font-bold">{{ $rank }}</td>
                             <td class="px-4 py-2">{{ $item->nama_objek }}</td>
                             <td class="px-4 py-2">{{ number_format($item->nilai, 3) }}</td>
                             <td class="px-4 py-2">
-                                @if ($item->nilai >= $batasMinimal)
-                                <span class="text-green-600 font-semibold">Diterima</span>
-                                @else
-                                <span class="text-red-500">Tidak Diterima</span>
-                                @endif
+                                @if ($kuota && $rank <= $kuota)
+                                    <span class="text-green-600 font-semibold">Diterima</span>
+                                    @else
+                                    <span class="text-red-500">Tidak Diterima</span>
+                                    @endif
                             </td>
                         </tr>
+                        @php $rank++; @endphp
                         @empty
                         <tr>
-                            <td colspan="3" class="text-center text-gray-500">Belum ada data hasil untuk jenjang ini.</td>
+                            <td colspan="4" class="text-center text-gray-500">Belum ada data hasil untuk jenjang ini.</td>
                         </tr>
                         @endforelse
                     </tbody>
                 </table>
             </div>
+
         </div>
 
     </div>

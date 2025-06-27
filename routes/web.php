@@ -4,6 +4,7 @@ use App\Http\Controllers\AlternatifController;
 use App\Http\Controllers\Auth\SantriRegisterController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\KriteriaController;
+use App\Http\Controllers\KuotaSeleksiController;
 use App\Http\Controllers\ObjekController;
 use App\Http\Controllers\PenilaianController;
 use App\Http\Controllers\ProfileController;
@@ -43,6 +44,8 @@ Route::group([
 
 ], function () {
     Route::get('/', [DashboardController::class, 'index'])->name('dashboard');
+    Route::post('/kuota-seleksi', [KuotaSeleksiController::class, 'store'])->name('kuota-seleksi.store');
+
 
     Route::group([
         'prefix' => 'kriteria'

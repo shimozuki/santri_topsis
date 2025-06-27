@@ -194,23 +194,69 @@
     <div class="w-full max-w-full px-3 mt-0 lg:w-7/12 lg:flex-none">
         <div class="border-black/12.5 shadow-soft-xl relative z-20 flex min-w-0 flex-col break-words rounded-2xl border-0 border-solid bg-white bg-clip-border">
             <div class="border-black/12.5 mb-0 rounded-t-2xl border-b-0 border-solid bg-white p-6 pb-0">
-                <h6>Hasil Perhitungan TOPSIS</h6>
-                <p class="leading-normal text-sm flex flex-col">
-                    <span class="font-semibold">
-                        X <i class="ri-arrow-right-line"></i> Alternatif
-                    </span>
-                    <span class="font-semibold">
-                        Y <i class="ri-arrow-right-line"></i> Nilai
-                    </span>
-                </p>
+                <h6>Kuota Penerimaan Siswa</h6>
             </div>
             <div class="flex-auto p-4">
-                <div>
-                    <canvas id="chart-line" height="300"></canvas>
+                {{-- Form Input Kuota --}}
+                <form action="{{ route('kuota-seleksi.store') }}" method="POST" class="space-y-4">
+                    @csrf
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                        <div>
+                            <label for="jenjang" class="block text-sm font-medium text-gray-700">Jenjang</label>
+                            <select name="jenjang" id="jenjang" class="form-select w-full mt-1">
+                                <option value="SMP">SMP</option>
+                                <option value="SMA">SMA</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label for="tahun" class="block text-sm font-medium text-gray-700">Tahun</label>
+                            <input type="number" name="tahun" id="tahun" value="{{ date('Y') }}" class="form-input w-full mt-1" required>
+                        </div>
+                        <div>
+                            <label for="jumlah_kuota" class="block text-sm font-medium text-gray-700">Jumlah Kuota</label>
+                            <input type="number" name="jumlah_kuota" id="jumlah_kuota" class="form-input w-full mt-1" required>
+                        </div>
+                    </div>
+                    <div class="text-right">
+                        <button type="submit" class="btn btn-primary bg-green-600 text-black hover:bg-green-700 hover:text-white focus:ring-4 focus:ring-green-300 font-medium rounded-lg text-sm px-5 py-2.5 mr-2 mb-2">
+                            Simpan Kuota
+                        </button>
+                    </div>
+                </form>
+
+                {{-- Tabel Data Kuota --}}
+                <div class="mt-6">
+                    <h6 class="text-base font-semibold mb-2">Data Kuota yang Tersimpan</h6>
+                    <table class="min-w-full divide-y divide-gray-200 text-sm text-gray-700 bg-white border rounded-md">
+                        <thead class="bg-gray-100">
+                            <tr>
+                                <th class="px-4 py-2 text-left font-semibold">#</th>
+                                <th class="px-4 py-2 text-left font-semibold">Jenjang</th>
+                                <th class="px-4 py-2 text-left font-semibold">Tahun</th>
+                                <th class="px-4 py-2 text-left font-semibold">Jumlah Kuota</th>
+                            </tr>
+                        </thead>
+                        <tbody class="divide-y divide-gray-100">
+                            @forelse ($kuotaList as $index => $kuota)
+                            <tr class="hover:bg-gray-50">
+                                <td class="px-4 py-2">{{ $index + 1 }}</td>
+                                <td class="px-4 py-2">{{ $kuota->jenjang }}</td>
+                                <td class="px-4 py-2">{{ $kuota->tahun }}</td>
+                                <td class="px-4 py-2">{{ $kuota->jumlah_kuota }}</td>
+                            </tr>
+                            @empty
+                            <tr>
+                                <td colspan="4" class="text-center text-gray-500 py-4">Belum ada data kuota.</td>
+                            </tr>
+                            @endforelse
+                        </tbody>
+                    </table>
                 </div>
             </div>
+
         </div>
     </div>
+
 </div>
 @endsection
 

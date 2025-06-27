@@ -7,6 +7,7 @@ use App\Http\Services\KriteriaService;
 use App\Http\Services\ObjekService;
 use App\Http\Services\SubKriteriaService;
 use App\Http\Services\TopsisService;
+use App\Models\KuotaSeleksi;
 use Illuminate\Http\Request;
 
 class DashboardController extends Controller
@@ -61,6 +62,7 @@ class DashboardController extends Controller
             "kriteriaID" => $kriteriaID,
             "kriteriaBobot" => $kriteriaBobot,
             "kriteria" => $kriteria,
+            'kuotaList' => KuotaSeleksi::orderBy('tahun', 'desc')->orderBy('jenjang')->get(),
         ]);
     }
 }
