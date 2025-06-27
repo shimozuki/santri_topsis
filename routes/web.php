@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\AlternatifController;
+use App\Http\Controllers\Auth\SantriRegisterController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\KriteriaController;
 use App\Http\Controllers\ObjekController;
