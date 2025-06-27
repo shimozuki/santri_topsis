@@ -87,12 +87,14 @@
             <h6 class="pl-6 ml-2 font-bold leading-tight uppercase text-xs opacity-60">AKUN</h6>
         </li>
         <li class="mt-2 w-full">
-            <a href="{{ route('users.index') }}"
-                class="flex items-center gap-4 px-6 py-3 text-sm font-semibold text-slate-700 transition-all rounded-lg hover:bg-gray-100">
-                <i class="ri-user-3-line text-lg"></i>
-                <span>Data User</span>
+            <a href="{{ route('users.index') }}" class="{{ Request::is('dashboard/user') ? 'shadow-soft-xl rounded-lg bg-white font-semibold text-dark' : '' }} py-2.7 text-sm ease-nav-brand my-0 mx-4 flex items-center whitespace-nowrap px-4 transition-colors">
+                <div class="{{ Request::is('dashboard/user') ? 'bg-gradient-to-tl from-backgroundSecondary to-greenSecondary text-white' : '' }} shadow-soft-2xl mr-2 flex h-8 w-8 items-center justify-center rounded-lg bg-white bg-center stroke-0 text-center xl:p-2.5">
+                    <i class="ri-user-3-line text-greenPrimary"></i>
+                </div>
+                <span class="ml-1 duration-300 opacity-100 pointer-events-none ease-soft">Data User</span>
             </a>
         </li>
+
         @endif
         @if(Auth::user()->roles->pluck('name')->contains('santri'))
         <li class="mt-0.5 w-full">
