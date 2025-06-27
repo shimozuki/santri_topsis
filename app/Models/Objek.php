@@ -16,6 +16,7 @@ class Objek extends Model
     public $timestamps = "true";
     protected $fillable = [
         "nama",
+        "jenjang",
     ];
 
     public function penilaian()

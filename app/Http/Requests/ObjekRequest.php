@@ -25,6 +25,7 @@ class ObjekRequest extends FormRequest
     {
         return [
             "nama" => "required|string|max:255",
+            'jenjang' => 'required|in:SMP,SMA',
         ];
     }
 }

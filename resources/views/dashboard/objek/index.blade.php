@@ -22,6 +22,7 @@
                     <thead>
                         <tr>
                             <th>Nama</th>
+                            <th>Jenjang</th>
                             @if(Auth::user()->roles->pluck('name')->contains('admin'))
                             <th>Aksi</th>
                             @endif
@@ -31,6 +32,7 @@
                         @foreach ($data as $item)
                         <tr>
                             <td>{{ $item->nama }}</td>
+                            <td>{{ $item->jenjang }}</td>
                             @if(Auth::user()->roles->pluck('name')->contains('admin'))
                             <td class="flex gap-x-3">
                                 <label for="edit_button" class="cursor-pointer" onclick="return edit_button('{{ $item->id }}')">
@@ -66,6 +68,21 @@
                             @enderror
                         </label>
                     </div>
+                    <div class="form-control w-full max-w-xs">
+                        <label class="label">
+                            <span class="label-text">Jenjang</span>
+                        </label>
+                        <select name="jenjang" class="select select-bordered w-full max-w-xs text-dark" required>
+                            <option value="">-- Pilih Jenjang --</option>
+                            <option value="SMP" {{ old('jenjang') == 'SMP' ? 'selected' : '' }}>SMP</option>
+                            <option value="SMA" {{ old('jenjang') == 'SMA' ? 'selected' : '' }}>SMA</option>
+                        </select>
+                        <label class="label">
+                            @error('jenjang')
+                            <span class="label-text-alt text-error">{{ $message }}</span>
+                            @enderror
+                        </label>
+                    </div>
                     <div class="modal-action">
                         <button type="submit" class="btn btn-success">Simpan</button>
                         <label for="add_button" class="btn">Batal</label>
@@ -91,6 +108,22 @@
                         <input type="text" name="nama" placeholder="Type here" class="input input-bordered w-full text-dark" required />
                         <label class="label">
                             @error('nama')
+                            <span class="label-text-alt text-error">{{ $message }}</span>
+                            @enderror
+                        </label>
+                    </div>
+                    <div class="form-control w-full max-w-xs">
+                        <label class="label">
+                            <span class="label-text">Jenjang</span>
+                            <span class="label-text-alt" id="loading_edit2_jenjang"></span>
+                        </label>
+                        <select name="jenjang" class="select select-bordered w-full max-w-xs text-dark" required>
+                            <option value="">Pilih Jenjang</option>
+                            <option value="SMP">SMP</option>
+                            <option value="SMA">SMA</option>
+                        </select>
+                        <label class="label">
+                            @error('jenjang')
                             <span class="label-text-alt text-error">{{ $message }}</span>
                             @enderror
                         </label>
@@ -122,6 +155,7 @@
                             @enderror
                         </label>
                     </div>
+
                     <div class="modal-action">
                         <button type="submit" class="btn btn-success">Import</button>
                         <label for="import_button" class="btn">Batal</label>
@@ -171,10 +205,12 @@
                 $("#title_form").html(`${items[1]}`);
                 $("input[name='id']").val(items[0]);
                 $("input[name='nama']").val(items[1]);
+                $("select[name='jenjang']").val(data[2]);
 
                 // Loading effect end
                 loading = "";
                 $("#loading_edit1").html(loading);
+                $("#loading_edit2_jenjang").html("");
             }
         });
     }

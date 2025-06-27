@@ -37,6 +37,7 @@ class ObjekRepository
     {
         $data = $this->objek->where('id', $id)->update([
             "nama" => $data['nama'],
+            "jenjang" => $data['jenjang'],
         ]);
         return $data;
     }
