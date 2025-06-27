@@ -1,6 +1,7 @@
 @extends('dashboard.layouts.app')
 
 @section('container')
+<meta name="csrf-token" content="{{ csrf_token() }}">
 <!-- row 1 -->
 <div class="flex flex-wrap -mx-3">
     <!-- card1 -->
@@ -234,6 +235,7 @@
                                 <th class="px-4 py-2 text-left font-semibold">Jenjang</th>
                                 <th class="px-4 py-2 text-left font-semibold">Tahun</th>
                                 <th class="px-4 py-2 text-left font-semibold">Jumlah Kuota</th>
+                                <th class="px-4 py-2 text-left font-semibold">Aksi</th>
                             </tr>
                         </thead>
                         <tbody class="divide-y divide-gray-100">
@@ -243,6 +245,20 @@
                                 <td class="px-4 py-2">{{ $kuota->jenjang }}</td>
                                 <td class="px-4 py-2">{{ $kuota->tahun }}</td>
                                 <td class="px-4 py-2">{{ $kuota->jumlah_kuota }}</td>
+                                <td class="px-4 py-2 space-x-2">
+                                    {{-- Tombol Edit: buka modal --}}
+                                    <label for="edit_button" class="cursor-pointer" onclick="return edit_button('{{ $kuota->id }}')">
+                                        <i class="ri-pencil-line text-xl"></i>
+                                    </label>
+
+                                    {{-- Tombol Hapus --}}
+                                    <form action="{{ route('kuota-seleksi.destroy', $kuota->id) }}" method="POST" class="inline">
+                                        @csrf
+                                        @method('DELETE')
+                                        <button type="submit" class="text-red-600 hover:underline text-sm"
+                                            onclick="return confirm('Yakin ingin menghapus kuota ini?')"><i class="ri-delete-bin-line text-xl"></i></button>
+                                    </form>
+                                </td>
                             </tr>
                             @empty
                             <tr>
@@ -258,6 +274,47 @@
     </div>
 
 </div>
+{{-- Modal Edit Kuota --}}
+<input type="checkbox" id="edit_button" class="modal-toggle" />
+<div class="modal">
+    <div class="modal-box" id="edit_form">
+        <form id="editForm" method="POST" onsubmit="submitKuotaUpdate(event)">
+            @csrf
+            <input type="hidden" name="id" id="editId" />
+
+            <h3 class="font-bold text-lg mb-4">Ubah Kuota Penerimaan</h3>
+
+            <div class="form-control w-full">
+                <label class="label">
+                    <span class="label-text">Jenjang</span>
+                </label>
+                <input type="text" name="jenjang" id="editJenjang" class="input input-bordered w-full text-dark" readonly />
+            </div>
+
+            <div class="form-control w-full">
+                <label class="label">
+                    <span class="label-text">Tahun</span>
+                </label>
+                <input type="number" name="tahun" id="editTahun" class="input input-bordered w-full text-dark" readonly />
+            </div>
+
+            <div class="form-control w-full">
+                <label class="label">
+                    <span class="label-text">Jumlah Kuota</span>
+                </label>
+                <input type="number" name="jumlah_kuota" id="editJumlahKuota" class="input input-bordered w-full text-dark" required />
+            </div>
+
+            <div class="modal-action mt-4">
+                <button type="submit" class="btn btn-success">Perbarui</button>
+                <label for="edit_button" class="btn">Batal</label>
+            </div>
+        </form>
+    </div>
+    <label class="modal-backdrop" for="edit_button">Close</label>
+</div>
+
+
 @endsection
 
 @section('js')
@@ -335,9 +392,96 @@
             },
         },
     });
-
     // end chart 1
 </script>
+<script>
+    const updateKuotaUrl = "{{ route('kuota-seleksi.update') }}";
+</script>
+<script>
+    function edit_button(id) {
+        $.ajax({
+            type: "GET",
+            url: "{{ route('kuota-seleksi.edit') }}",
+            data: {
+                _token: "{{ csrf_token() }}",
+                id: id
+            },
+            success: function(data) {
+                $("#editId").val(data[0]);
+                $("#editJenjang").val(data[1]);
+                $("#editTahun").val(data[2]);
+                $("#editJumlahKuota").val(data[3]);
+
+                // Buka modal edit
+                document.getElementById('editModal').classList.remove('hidden');
+                document.getElementById('editModal').classList.add('flex');
+            }
+        });
+    }
+
+    function submitKuotaUpdate(event) {
+        event.preventDefault();
+
+        const id = document.getElementById('editId').value;
+        const tokenMeta = document.querySelector('meta[name="csrf-token"]');
+        if (!tokenMeta) {
+            alert("CSRF token tidak ditemukan.");
+            return;
+        }
+
+        const token = tokenMeta.getAttribute('content');
+
+        const data = {
+            id: id,
+            jumlah_kuota: document.getElementById('editJumlahKuota').value
+        };
+
+        fetch(updateKuotaUrl, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+                },
+                body: JSON.stringify({
+                    id: document.getElementById('editId').value,
+                    jumlah_kuota: document.getElementById('editJumlahKuota').value
+                })
+            })
+            .then(res => res.json())
+            .then(res => {
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Berhasil',
+                    text: res.message,
+                    confirmButtonColor: '#3085d6'
+                }).then(() => {
+                    location.reload();
+                });
+            })
+            .catch(err => {
+                console.error(err);
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Gagal',
+                    text: 'Terjadi kesalahan saat memperbarui kuota.',
+                    confirmButtonColor: '#d33'
+                });
+            });
+
+    }
+
+    // 💡 Tambahkan binding setelah DOM siap
+    document.addEventListener("DOMContentLoaded", function() {
+        const form = document.getElementById("editForm");
+        if (form) {
+            form.addEventListener("submit", submitKuotaUpdate);
+        }
+    });
+</script>
+
+
+
+
 
 <script>
     var ctx2 = document.getElementById("chart-line").getContext("2d");

@@ -10,6 +10,7 @@ use App\Http\Controllers\PenilaianController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\SubKriteriaController;
 use App\Http\Controllers\TopsisController;
+use App\Http\Controllers\UserController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -36,6 +37,7 @@ Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
+    Route::get('/users', [UserController::class, 'index'])->name('users.index');
 });
 
 Route::group([
@@ -45,6 +47,10 @@ Route::group([
 ], function () {
     Route::get('/', [DashboardController::class, 'index'])->name('dashboard');
     Route::post('/kuota-seleksi', [KuotaSeleksiController::class, 'store'])->name('kuota-seleksi.store');
+    Route::get('/kuota-seleksi/edit', [KuotaSeleksiController::class, 'edit'])->name('kuota-seleksi.edit');
+    Route::post('/kuota-seleksi/update', [KuotaSeleksiController::class, 'updateKuota'])->name('kuota-seleksi.update');
+    Route::delete('/kuota-seleksi/{id}', [KuotaSeleksiController::class, 'destroy'])->name('kuota-seleksi.destroy');
+
 
 
     Route::group([
