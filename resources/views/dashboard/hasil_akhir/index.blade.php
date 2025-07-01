@@ -22,7 +22,6 @@
                         </button>
                     </form>
                     @endif
-                    @if(Auth::user()->roles->pluck('name')->contains('kepala_sekolah') && !$isApproved)
                     {{-- Tombol Export PDF --}}
                     @if($isApproved)
                     <form action="{{ 'pdf_hasil' }}" method="post" enctype="multipart/form-data" target="_blank">
@@ -32,7 +31,6 @@
                             Export PDF
                         </button>
                     </form>
-                    @endif
                     @endif
                 </div>
             </div>
