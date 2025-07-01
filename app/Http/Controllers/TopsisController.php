@@ -6,6 +6,7 @@ use Barryvdh\DomPDF\Facade\PDF;
 use App\Http\Services\TopsisService;
 use App\Http\Services\KriteriaService;
 use App\Http\Services\PenilaianService;
+use App\Models\KuotaSeleksi;
 use App\Models\Objek;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Http\Request;
@@ -107,19 +108,34 @@ class TopsisController extends Controller
         return $pdf->stream();
     }
 
-    public function pdf_hasil()
+    public function pdf_hasil(Request $request)
     {
         $judul = "Laporan Hasil Akhir";
-        $hasilTopsis = $this->topsisServices->getHasilTopsis();
+        $jenjang = $request->get('jenjang');
 
-        $pdf = PDF::setOptions(['defaultFont' => 'sans-serif'])->loadview('dashboard.pdf.hasil_akhir', [
+        $query = DB::table('hasil_solusi_topsis as hst')
+            ->join('objek as o', 'o.id', 'hst.objek_id')
+            ->select('hst.*', 'o.nama as nama_objek', 'o.jenjang');
+
+        if ($jenjang) {
+            $query->whereIn('hst.objek_id', function ($q) use ($jenjang) {
+                $q->select('id')->from('objek')->where('jenjang', $jenjang);
+            });
+        }
+
+        $hasilTopsis = $query->orderByDesc('nilai')->get(); // pastikan urutan ranking benar
+        $kuota = $jenjang ? \App\Models\KuotaSeleksi::getKuota($jenjang, now()->year) : null;
+
+        return PDF::setOptions(['defaultFont' => 'sans-serif'])->loadview('dashboard.pdf.hasil_akhir', [
             'judul' => $judul,
             'hasilTopsis' => $hasilTopsis,
-        ]);
-
-        // return $pdf->download('laporan-penilaian.pdf');
-        return $pdf->stream();
+            'jenjang' => $jenjang,
+            'kuota' => $kuota,
+        ])->stream();
     }
+
+
+
 
     public function hitungTopsis()
     {
