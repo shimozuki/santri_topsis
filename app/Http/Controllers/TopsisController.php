@@ -123,16 +123,28 @@ class TopsisController extends Controller
             });
         }
 
-        $hasilTopsis = $query->orderByDesc('nilai')->get(); // pastikan urutan ranking benar
+        $hasilTopsis = $query->orderByDesc('nilai')->get();
         $kuota = $jenjang ? \App\Models\KuotaSeleksi::getKuota($jenjang, now()->year) : null;
+
+        // ✅ Generate base64 logo
+        $logoPath = public_path('kop.png');
+        $logoBase64 = null;
+        if (file_exists($logoPath)) {
+            $logoType = pathinfo($logoPath, PATHINFO_EXTENSION);
+            $logoData = base64_encode(file_get_contents($logoPath));
+            $logoBase64 = 'data:image/' . $logoType . ';base64,' . $logoData;
+        }
 
         return PDF::setOptions(['defaultFont' => 'sans-serif'])->loadview('dashboard.pdf.hasil_akhir', [
             'judul' => $judul,
             'hasilTopsis' => $hasilTopsis,
             'jenjang' => $jenjang,
             'kuota' => $kuota,
+            'logoBase64' => $logoBase64,
         ])->stream();
     }
+
+
 
 
 

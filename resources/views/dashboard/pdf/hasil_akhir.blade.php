@@ -3,38 +3,69 @@
 @section("container")
 <div class="-mx-3 flex flex-wrap">
     <div class="w-full max-w-full flex-none px-3 table-pdf">
-        <div class="mb-5 judul-laporan">
-            <h1>{{ $judul }}</h1>
+
+        {{-- KOP SURAT --}}
+        <table style="width: 100%; border-bottom: 5px solid black; margin-bottom: 20px;">
+            <tr>
+                {{-- Logo kiri --}}
+                <td style="width: 100px; padding-right: 10px; vertical-align: top;">
+                    <img src="{{ $logoBase64 }}" alt="Logo" style="width: 90px; height: auto;">
+                </td>
+
+                {{-- Teks kop --}}
+                <td style="vertical-align: top;" colspan="6">
+                    <div style="font-size: 20px; font-weight: bold; text-transform: uppercase;">
+                        YAYASAN NURUL ISLAM SUMBAWA
+                    </div>
+                    <div style="font-size: 18px; font-weight: bold; text-transform: uppercase;">
+                        PENERIMAAN PESERTA DIDIK BARU TAHUN 2024
+                    </div>
+                    <div style="font-size: 16px; font-weight: bold; text-transform: uppercase;">
+                        Pondok Pesantren Aisyah Samawa • Pondok Pesantren Wahyul Qur'an
+                    </div>
+                    <div style="font-size: 14px;">
+                        Jln. Pramuka, RT.003/RW.001, Kel. Brang Biji, Kec. Sumbawa, Kab. Sumbawa, NTB, Indonesia, 84312
+                    </div>
+                </td>
+            </tr>
+        </table>
+
+
+
+        {{-- JUDUL LAPORAN --}}
+        <div class="mb-5 judul-laporan" style="text-align: center;">
+            <h1 style="margin-bottom: 1rem;">{{ $judul }}</h1>
         </div>
 
-        <div class="shadow-soft-xl relative mb-5 flex min-w-0 flex-col break-words rounded-2xl border-0 border-solid border-transparent bg-white bg-clip-border">
-            <div class="border-b-solid flex flex-row items-center justify-between rounded-t-2xl border-b-0 border-b-transparent bg-white p-6 pb-0">
+        {{-- TABEL HASIL --}}
+        <div class="shadow-soft-xl relative mb-5 flex min-w-0 flex-col break-words rounded-2xl bg-white bg-clip-border">
+            <div style="padding: 1rem 1rem 0;">
                 <h2>Hasil Perhitungan TOPSIS</h2>
             </div>
-            <div id='recipients' class="rounded bg-white p-8 shadow">
-                <table border="0" cellpadding="0" cellspacing="0" style="width:100%; padding-top: 1em; padding-bottom: 1em;">
-                    <thead>
+            <div id='recipients' style="padding: 1rem;">
+                <table border="1" cellpadding="6" cellspacing="0" style="width: 100%; border-collapse: collapse; table-layout: fixed;">
+                    <thead style="background-color: #e5e5e5;">
                         <tr>
-                            <th class="px-4 py-2 text-left font-semibold">Peringkat</th>
-                            <th class="px-4 py-2 text-left font-semibold">Nama</th>
-                            <th class="px-4 py-2 text-left font-semibold">Nilai</th>
-                            <th class="px-4 py-2 text-left font-semibold">Keterangan</th>
+                            <th style="width: 10%; text-align: center;">Peringkat</th>
+                            <th style="width: 40%; text-align: left;">Nama</th>
+                            <th style="width: 25%; text-align: center;">Nilai</th>
+                            <th style="width: 25%; text-align: center;">Keterangan</th>
                         </tr>
                     </thead>
                     <tbody>
                         @php $rank = 1; @endphp
                         @foreach ($hasilTopsis->sortByDesc('nilai') as $item)
-                        <tr>
-                            <td class="px-4 py-2 text-center font-bold">{{ $rank }}</td>
-                            <td class="px-4 py-2">{{ $item->nama_objek }}</td>
-                            <td class="px-4 py-2">{{ round($item->nilai, 3) }}</td>
-                            <td class="px-4 py-2">
-                                @if ($rank <= ($kuota ?? 0)) <!-- Default kuota to 0 if not set -->
+                        <tr @if($rank % 2==0) style="background-color: #f9f9f9;" @endif>
+                            <td style="text-align: center;">{{ $rank }}</td>
+                            <td>{{ $item->nama_objek }}</td>
+                            <td style="text-align: center;">{{ round($item->nilai, 3) }}</td>
+                            <td style="text-align: center;">
+                                @if ($rank <= ($kuota ?? 0))
                                     Diterima
                                     @else
                                     Tidak Diterima
                                     @endif
-                            </td>
+                                    </td>
                         </tr>
                         @php $rank++; @endphp
                         @endforeach
