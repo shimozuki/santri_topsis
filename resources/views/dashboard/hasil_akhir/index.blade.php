@@ -35,13 +35,21 @@
             </div>
 
             <div class="p-8">
-                <form method="GET" action="{{ route('hasil_akhir') }}" class="mb-4">
+                <form method="GET" action="{{ route('hasil_akhir') }}" class="mb-4 flex gap-4">
                     <select name="jenjang" onchange="this.form.submit()" class="form-select w-1/3">
                         <option value="">-- Semua Jenjang --</option>
                         <option value="SMP" {{ request('jenjang') == 'SMP' ? 'selected' : '' }}>SMP</option>
                         <option value="SMA" {{ request('jenjang') == 'SMA' ? 'selected' : '' }}>SMA</option>
                     </select>
+
+                    <select name="tahun" onchange="this.form.submit()" class="form-select w-1/3">
+                        <option value="">-- Semua Tahun --</option>
+                        @for ($i = now()->year; $i >= 2020; $i--)
+                        <option value="{{ $i }}" {{ request('tahun') == $i ? 'selected' : '' }}>{{ $i }}</option>
+                        @endfor
+                    </select>
                 </form>
+
 
                 @if (!$jenjang)
                 @foreach ($hasilPerJenjang as $j => $hasilTopsis)

@@ -27,6 +27,7 @@
         @endphp
 
         <h3 style="margin-top: 2rem;">Jenjang: {{ $jenjang }}</h3>
+        <p>Tahun: {{ now()->year }}</p>
 
         @if (!$data['kuota'])
         <p style="color: red;">Kuota belum ditentukan untuk jenjang {{ $jenjang }}</p>

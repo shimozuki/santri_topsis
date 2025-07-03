@@ -26,6 +26,7 @@ class TopsisController extends Controller
     {
         $judul = "Hasil Akhir";
         $jenjang = $request->get('jenjang');
+        $tahun = $request->get('tahun');
 
         $query = DB::table('hasil_solusi_topsis as hst')
             ->join('objek as o', 'o.id', 'hst.objek_id')
@@ -36,6 +37,11 @@ class TopsisController extends Controller
                 $q->select('id')->from('objek')->where('jenjang', $jenjang);
             });
 
+
+
+            if ($tahun) {
+                $query->whereYear('hst.created_at', $tahun); // Pastikan `created_at` tersedia di tabel
+            }
             $hasilTopsis = $query->orderBy('hst.id', 'asc')->get();
 
             return view('dashboard.hasil_akhir.index', compact('judul', 'hasilTopsis', 'jenjang'));
