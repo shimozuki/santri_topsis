@@ -15,12 +15,16 @@
                         <i class="ri-file-excel-line"></i>
                         Import Data
                     </label>
+                    <a href="{{ asset('templates/template_siswa.xlsx') }}" class="cursor-pointer inline-block px-3 py-2 font-bold text-center text-white rounded-lg text-sm ease-soft-in shadow-soft-md bg-gradient-to-br from-greenPrimary to-greenPrimary/80 shadow-soft-md hover:shadow-soft-xs active:opacity-85 hover:scale-102 transition-all" download>
+                        <i class="ri-download-2-line"></i> Template Excel
+                    </a>
                 </div>
             </div>
             <div id='recipients' class="p-8 mt-6 lg:mt-0 rounded shadow bg-white">
                 <table id="tabel_data" class="stripe hover" style="width:100%; padding-top: 1em; padding-bottom: 1em;">
                     <thead>
                         <tr>
+                            <th>NISN</th>
                             <th>Nama</th>
                             <th>Jenjang</th>
                             @if(Auth::user()->roles->pluck('name')->contains('admin'))
@@ -31,6 +35,7 @@
                     <tbody>
                         @foreach ($data as $item)
                         <tr>
+                            <td>{{ $item->nisn }}</td>
                             <td>{{ $item->nama }}</td>
                             <td>{{ $item->jenjang }}</td>
                             @if(Auth::user()->roles->pluck('name')->contains('admin'))
@@ -102,6 +107,18 @@
                     <input type="text" name="id" hidden />
                     <div class="form-control w-full max-w-xs">
                         <label class="label">
+                            <span class="label-text">NISN</span>
+                        </label>
+                        <input type="text" name="nisn" value="{{ old('nisn') }}" placeholder="Masukkan NISN" class="input input-bordered w-full text-dark" required />
+                        <label class="label">
+                            @error('nisn')
+                            <span class="label-text-alt text-error">{{ $message }}</span>
+                            @enderror
+                        </label>
+                    </div>
+
+                    <div class="form-control w-full max-w-xs">
+                        <label class="label">
                             <span class="label-text">Nama</span>
                             <span class="label-text-alt" id="loading_edit1"></span>
                         </label>
@@ -169,6 +186,27 @@
 @endsection
 
 @section('js')
+@if ($errors->any())
+<script>
+    Swal.fire({
+        title: 'Gagal!',
+        text: '{{ $errors->first() }}',
+        icon: 'error',
+        confirmButtonText: 'OK'
+    });
+</script>
+@endif
+@if (session('import_errors'))
+<script>
+    Swal.fire({
+        icon: 'error',
+        title: 'Import Gagal!',
+        html: `{!! implode('<br>', session('import_errors')) !!}`,
+    });
+</script>
+@endif
+
+
 <script>
     // Tabel
     $(document).ready(function() {
@@ -183,7 +221,6 @@
 
 
     function edit_button(id) {
-        // Loading effect start
         let loading = `<span class="loading loading-dots loading-md text-greenPrimary"></span>`;
         $("#title_form").html(loading);
         $("#loading_edit1").html(loading);
@@ -196,24 +233,18 @@
                 "id": id
             },
             success: function(data) {
-                // console.log(data);
-                let items = [];
-                $.each(data, function(key, val) {
-                    items.push(val);
-                });
+                $("#title_form").html(data.nama);
+                $("input[name='id']").val(data.id);
+                $("input[name='nama']").val(data.nama);
+                $("select[name='jenjang']").val(data.jenjang.trim()); // ini yang penting
+                $("input[name='nisn']").val(data.nisn);
 
-                $("#title_form").html(`${items[1]}`);
-                $("input[name='id']").val(items[0]);
-                $("input[name='nama']").val(items[1]);
-                $("select[name='jenjang']").val(data[2]);
-
-                // Loading effect end
-                loading = "";
-                $("#loading_edit1").html(loading);
+                $("#loading_edit1").html("");
                 $("#loading_edit2_jenjang").html("");
             }
         });
     }
+
 
     function delete_button(id, nama) {
         Swal.fire({

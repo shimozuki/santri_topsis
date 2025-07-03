@@ -4,8 +4,11 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\ObjekRequest;
 use App\Http\Services\ObjekService;
+use App\Imports\ObjekImport;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Maatwebsite\Excel\Facades\Excel;
+use Maatwebsite\Excel\Validators\ValidationException;
 
 class ObjekController extends Controller
 {
@@ -82,14 +85,25 @@ class ObjekController extends Controller
 
     public function import(Request $request)
     {
-        // validasi
         $request->validate([
             'import_data' => 'required|mimes:xls,xlsx'
         ]);
 
-        $this->objekService->import($request);
+        try {
+            Excel::import(new ObjekImport, $request->file('import_data'));
 
-        // alihkan halaman kembali
-        return redirect('dashboard/objek')->with('berhasil', "Data berhasil di import!");
+            return redirect()->back()->with('berhasil', 'Data berhasil di-import!');
+        } catch (ValidationException $e) {
+            $failures = $e->failures();
+            $messages = [];
+
+            foreach ($failures as $failure) {
+                $messages[] = "Baris " . $failure->row() . ": " . implode(', ', $failure->errors());
+            }
+
+            return redirect()->back()->with('import_errors', $messages);
+        }
+
+        \Log::error($messages);
     }
 }

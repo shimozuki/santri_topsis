@@ -17,6 +17,7 @@ class Objek extends Model
     protected $fillable = [
         "nama",
         "jenjang",
+        "nisn"
     ];
 
     public function penilaian()

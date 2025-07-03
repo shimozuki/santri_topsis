@@ -40,7 +40,7 @@
         {{-- TABEL HASIL --}}
         <div class="shadow-soft-xl relative mb-5 flex min-w-0 flex-col break-words rounded-2xl bg-white bg-clip-border">
             <div style="padding: 1rem 1rem 0;">
-                <h2>Hasil Perhitungan TOPSIS</h2>
+                <h2>Hasil Perhitungan TOPSIS Jenjang {{ $jenjang }}</h2>
             </div>
             <div id='recipients' style="padding: 1rem;">
                 <table border="1" cellpadding="6" cellspacing="0" style="width: 100%; border-collapse: collapse; table-layout: fixed;">

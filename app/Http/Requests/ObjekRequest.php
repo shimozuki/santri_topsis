@@ -26,6 +26,7 @@ class ObjekRequest extends FormRequest
         return [
             "nama" => "required|string|max:255",
             'jenjang' => 'required|in:SMP,SMA',
+            'nisn' => 'required|string|max:20|unique:objek,nisn,' . $this->id,
         ];
     }
 }

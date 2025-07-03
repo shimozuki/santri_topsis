@@ -11,7 +11,11 @@ class KuotaSeleksiController extends Controller
     {
         $validated = $request->validate([
             'jenjang' => 'required|string',
-            'tahun' => 'required|integer',
+            'tahun' => [
+                'required',
+                'integer',
+                'after_or_equal:' . date('Y'), // tahun tidak boleh kurang dari tahun sekarang
+            ],
             'jumlah_kuota' => 'required|integer|min:1',
         ]);
 

@@ -27,7 +27,6 @@ class TopsisController extends Controller
         $judul = "Hasil Akhir";
         $jenjang = $request->get('jenjang');
 
-
         $query = DB::table('hasil_solusi_topsis as hst')
             ->join('objek as o', 'o.id', 'hst.objek_id')
             ->select('hst.*', 'o.nama as nama_objek', 'o.jenjang');
@@ -36,13 +35,36 @@ class TopsisController extends Controller
             $query->whereIn('hst.objek_id', function ($q) use ($jenjang) {
                 $q->select('id')->from('objek')->where('jenjang', $jenjang);
             });
+
+            $hasilTopsis = $query->orderBy('hst.id', 'asc')->get();
+
+            return view('dashboard.hasil_akhir.index', compact('judul', 'hasilTopsis', 'jenjang'));
+        } else {
+            $jenjangList = DB::table('objek')->distinct()->pluck('jenjang');
+            $hasilPerJenjang = [];
+            $semuaApproved = true;
+
+            foreach ($jenjangList as $j) {
+                $data = (clone $query)
+                    ->whereIn('hst.objek_id', function ($q) use ($j) {
+                        $q->select('id')->from('objek')->where('jenjang', $j);
+                    })
+                    ->orderBy('hst.id', 'asc')
+                    ->get();
+
+                // cek apakah data ada dan statusnya tidak 'disetujui'
+                if ($data->isNotEmpty() && $data->first()->status !== 'disetujui') {
+                    $semuaApproved = false;
+                }
+
+                $hasilPerJenjang[$j] = $data;
+            }
+
+            return view('dashboard.hasil_akhir.index', compact('judul', 'hasilPerJenjang', 'jenjang', 'semuaApproved'));
         }
-
-        $hasilTopsis = $query->orderBy('hst.id', 'asc')->get();
-
-        return view('dashboard.hasil_akhir.index', compact('judul', 'hasilTopsis', 'jenjang'))
-            ->with('batasMinimal', 0.5);
     }
+
+
 
     public function index()
     {
@@ -117,37 +139,58 @@ class TopsisController extends Controller
             ->join('objek as o', 'o.id', 'hst.objek_id')
             ->select('hst.*', 'o.nama as nama_objek', 'o.jenjang');
 
+        $hasilPerJenjang = [];
+
         if ($jenjang) {
             $query->whereIn('hst.objek_id', function ($q) use ($jenjang) {
                 $q->select('id')->from('objek')->where('jenjang', $jenjang);
             });
+
+            $hasilTopsis = $query->orderByDesc('nilai')->get();
+            $kuota = \App\Models\KuotaSeleksi::getKuota($jenjang, now()->year);
+
+            return PDF::setOptions(['defaultFont' => 'sans-serif'])->loadview('dashboard.pdf.hasil_akhir', [
+                'judul' => $judul,
+                'hasilTopsis' => $hasilTopsis,
+                'jenjang' => $jenjang,
+                'kuota' => $kuota,
+                'logoBase64' => $this->getLogoBase64()
+            ])->stream();
+        } else {
+            $jenjangList = DB::table('objek')->distinct()->pluck('jenjang');
+
+            foreach ($jenjangList as $j) {
+                $data = (clone $query)
+                    ->whereIn('hst.objek_id', function ($q) use ($j) {
+                        $q->select('id')->from('objek')->where('jenjang', $j);
+                    })
+                    ->orderByDesc('nilai')
+                    ->get();
+
+                $hasilPerJenjang[$j] = [
+                    'hasil' => $data,
+                    'kuota' => \App\Models\KuotaSeleksi::getKuota($j, now()->year),
+                ];
+            }
+
+            return PDF::setOptions(['defaultFont' => 'sans-serif'])->loadview('dashboard.pdf.hasil_akhir_all', [
+                'judul' => $judul,
+                'hasilPerJenjang' => $hasilPerJenjang,
+                'logoBase64' => $this->getLogoBase64()
+            ])->stream();
         }
+    }
 
-        $hasilTopsis = $query->orderByDesc('nilai')->get();
-        $kuota = $jenjang ? \App\Models\KuotaSeleksi::getKuota($jenjang, now()->year) : null;
-
-        // ✅ Generate base64 logo
+    private function getLogoBase64()
+    {
         $logoPath = public_path('kop.png');
-        $logoBase64 = null;
         if (file_exists($logoPath)) {
             $logoType = pathinfo($logoPath, PATHINFO_EXTENSION);
             $logoData = base64_encode(file_get_contents($logoPath));
-            $logoBase64 = 'data:image/' . $logoType . ';base64,' . $logoData;
+            return 'data:image/' . $logoType . ';base64,' . $logoData;
         }
-
-        return PDF::setOptions(['defaultFont' => 'sans-serif'])->loadview('dashboard.pdf.hasil_akhir', [
-            'judul' => $judul,
-            'hasilTopsis' => $hasilTopsis,
-            'jenjang' => $jenjang,
-            'kuota' => $kuota,
-            'logoBase64' => $logoBase64,
-        ])->stream();
+        return null;
     }
-
-
-
-
-
 
     public function hitungTopsis()
     {

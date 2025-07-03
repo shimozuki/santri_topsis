@@ -235,7 +235,9 @@
                                 <th class="px-4 py-2 text-left font-semibold">Jenjang</th>
                                 <th class="px-4 py-2 text-left font-semibold">Tahun</th>
                                 <th class="px-4 py-2 text-left font-semibold">Jumlah Kuota</th>
+                                @if(Auth::user()->roles->pluck('name')->contains('admin'))
                                 <th class="px-4 py-2 text-left font-semibold">Aksi</th>
+                                @endif
                             </tr>
                         </thead>
                         <tbody class="divide-y divide-gray-100">
@@ -245,6 +247,7 @@
                                 <td class="px-4 py-2">{{ $kuota->jenjang }}</td>
                                 <td class="px-4 py-2">{{ $kuota->tahun }}</td>
                                 <td class="px-4 py-2">{{ $kuota->jumlah_kuota }}</td>
+                                @if(Auth::user()->roles->pluck('name')->contains('admin'))
                                 <td class="px-4 py-2 space-x-2">
                                     {{-- Tombol Edit: buka modal --}}
                                     <label for="edit_button" class="cursor-pointer" onclick="return edit_button('{{ $kuota->id }}')">
@@ -259,6 +262,7 @@
                                             onclick="return confirm('Yakin ingin menghapus kuota ini?')"><i class="ri-delete-bin-line text-xl"></i></button>
                                     </form>
                                 </td>
+                                @endif
                             </tr>
                             @empty
                             <tr>
@@ -318,6 +322,16 @@
 @endsection
 
 @section('js')
+@if ($errors->any())
+<script>
+    Swal.fire({
+        title: 'Gagal!',
+        html: `{!! implode('<br>', $errors->all()) !!}`,
+        icon: 'error',
+        confirmButtonText: 'OK'
+    });
+</script>
+@endif
 <script>
     var ctx = document.getElementById("chart-bars").getContext("2d");
 

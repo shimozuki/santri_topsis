@@ -38,6 +38,7 @@ class ObjekRepository
         $data = $this->objek->where('id', $id)->update([
             "nama" => $data['nama'],
             "jenjang" => $data['jenjang'],
+            "nisn" => $data['nisn'] ?? null, // Menambahkan nisn jika ada
         ]);
         return $data;
     }
