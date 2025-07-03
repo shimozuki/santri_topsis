@@ -199,6 +199,7 @@
             </div>
             <div class="flex-auto p-4">
                 {{-- Form Input Kuota --}}
+                @if(Auth::user()->roles->pluck('name')->contains('admin'))
                 <form action="{{ route('kuota-seleksi.store') }}" method="POST" class="space-y-4">
                     @csrf
                     <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
@@ -224,6 +225,9 @@
                         </button>
                     </div>
                 </form>
+                @endif
+
+                {{-- Pesan Sukses --}}
 
                 {{-- Tabel Data Kuota --}}
                 <div class="mt-6">
