@@ -9,13 +9,6 @@
                 @csrf
                 <button type="submit" class="btn btn-active btn-accent text-white hover:bg-accent/95 hover:border-accent/95">Hitung TOPSIS</button>
             </form>
-            <form action="{{ 'pdf_topsis' }}" method="post" enctype="multipart/form-data" target="_blank">
-                @csrf
-                <button type="submit" class="btn btn-active btn-error text-white hover:bg-error/95 hover:border-error/95">
-                    <i class="ri-file-pdf-line"></i>
-                    Export PDF
-                </button>
-            </form>
         </div>
         @endif
 
