@@ -64,6 +64,17 @@
                     @csrf
                     <div class="form-control w-full max-w-xs">
                         <label class="label">
+                            <span class="label-text">NISN</span>
+                        </label>
+                        <input type="text" name="nisn" value="{{ old('nisn') }}" placeholder="Masukkan NISN" class="input input-bordered w-full text-dark" required />
+                        <label class="label">
+                            @error('nisn')
+                            <span class="label-text-alt text-error">{{ $message }}</span>
+                            @enderror
+                        </label>
+                    </div>
+                    <div class="form-control w-full max-w-xs">
+                        <label class="label">
                             <span class="label-text">Nama</span>
                         </label>
                         <input type="text" name="nama" placeholder="Type here" class="input input-bordered w-full max-w-xs text-dark" value="{{ old('nama') }}" required />
