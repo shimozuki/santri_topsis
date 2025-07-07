@@ -72,6 +72,7 @@
                     <thead class="bg-gray-100">
                         <tr>
                             <th class="px-4 py-2 text-left font-semibold">Peringkat</th>
+                            <th class="px-4 py-2 text-left font-semibold">NISN</th>
                             <th class="px-4 py-2 text-left font-semibold">Nama</th>
                             <th class="px-4 py-2 text-left font-semibold">Nilai</th>
                             <th class="px-4 py-2 text-left font-semibold">Keterangan</th>
@@ -81,6 +82,7 @@
                         @forelse ($hasilTopsis->sortByDesc('nilai') as $item)
                         <tr class="hover:bg-gray-50">
                             <td class="px-4 py-2 text-center font-bold">{{ $rank }}</td>
+                            <td class="px-4 py-2 text-center font-bold">{{ $item->nisn }}</td>
                             <td class="px-4 py-2">{{ $item->nama_objek }}</td>
                             <td class="px-4 py-2">{{ number_format($item->nilai, 3) }}</td>
                             <td class="px-4 py-2">

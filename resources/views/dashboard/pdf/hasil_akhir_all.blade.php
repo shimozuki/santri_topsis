@@ -37,6 +37,7 @@
             <thead style="background-color: #e5e5e5;">
                 <tr>
                     <th style="width: 10%; text-align: center;">Peringkat</th>
+                    <th style="width: 10%; text-align: center;">NISN</th>
                     <th style="width: 40%;">Nama</th>
                     <th style="width: 25%; text-align: center;">Nilai</th>
                     <th style="width: 25%; text-align: center;">Keterangan</th>
@@ -46,6 +47,7 @@
                 @foreach ($data['hasil']->sortByDesc('nilai') as $item)
                 <tr @if($rank % 2==0) style="background-color: #f9f9f9;" @endif>
                     <td style="text-align: center;">{{ $rank }}</td>
+                    <td style="text-align: center;">{{ $item->nisn }}</td>
                     <td>{{ $item->nama_objek }}</td>
                     <td style="text-align: center;">{{ round($item->nilai, 3) }}</td>
                     <td style="text-align: center;">

@@ -30,7 +30,7 @@ class TopsisController extends Controller
 
         $query = DB::table('hasil_solusi_topsis as hst')
             ->join('objek as o', 'o.id', 'hst.objek_id')
-            ->select('hst.*', 'o.nama as nama_objek', 'o.jenjang');
+            ->select('hst.*', 'o.nama as nama_objek', 'o.jenjang', 'o.nisn');
 
         if ($jenjang) {
             $query->whereIn('hst.objek_id', function ($q) use ($jenjang) {
@@ -143,7 +143,7 @@ class TopsisController extends Controller
 
         $query = DB::table('hasil_solusi_topsis as hst')
             ->join('objek as o', 'o.id', 'hst.objek_id')
-            ->select('hst.*', 'o.nama as nama_objek', 'o.jenjang');
+            ->select('hst.*', 'o.nama as nama_objek', 'o.jenjang', 'o.nisn');
 
         $hasilPerJenjang = [];
 
