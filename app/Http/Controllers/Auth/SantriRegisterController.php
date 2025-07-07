@@ -21,6 +21,7 @@ class SantriRegisterController extends Controller
         $request->validate([
             'name' => 'required|string|max:255',
             'jenjang' => 'required|in:SMP,SMA',
+            'nisn' => 'required|string|max:20|unique:objek,nisn',
             'email' => 'required|string|email|max:255|unique:users',
             'password' => 'required|string|min:6|confirmed',
         ]);
@@ -42,6 +43,7 @@ class SantriRegisterController extends Controller
         Objek::create([
             'nama' => $request->name,
             'jenjang' => $request->jenjang,
+            'nisn' => $request->nisn
         ]);
 
         return redirect()->route('login')->with('status', 'Registrasi berhasil. Silakan login.');

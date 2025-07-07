@@ -3,7 +3,7 @@
 @section('container')
 <div class="flex flex-wrap -mx-3">
     <div class="flex-none w-full max-w-full px-3">
-
+        @if(Auth::user()->roles->pluck('name')->contains('admin'))
         <div class="mb-5 flex gap-x-1">
             <form action="{{ 'hitung_topsis' }}" method="post" enctype="multipart/form-data">
                 @csrf
@@ -17,6 +17,7 @@
                 </button>
             </form>
         </div>
+        @endif
 
         {{-- Tabel Bobot Kriteria --}}
         <div class="relative flex flex-col min-w-0 mb-5 break-words bg-white border-0 border-transparent border-solid shadow-soft-xl rounded-2xl bg-clip-border">

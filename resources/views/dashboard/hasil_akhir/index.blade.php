@@ -21,7 +21,7 @@
                         </button>
                     </form>
                     @endif
-
+                    @if(Auth::user()->roles->pluck('name')->contains('admin') || Auth::user()->roles->pluck('name')->contains('kepala_sekolah'))
                     @if((!$jenjang && $semuaApproved) || $isApproved)
                     <form action="{{ 'pdf_hasil' }}" method="post" enctype="multipart/form-data" target="_blank">
                         @csrf
@@ -30,6 +30,7 @@
                             <i class="ri-file-pdf-line"></i> Export PDF
                         </button>
                     </form>
+                    @endif
                     @endif
                 </div>
             </div>
