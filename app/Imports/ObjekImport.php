@@ -3,7 +3,9 @@
 namespace App\Imports;
 
 use App\Models\Objek;
-use Carbon\Carbon;
+use App\Models\User;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\Rule;
 use Maatwebsite\Excel\Concerns\ToModel;
 use Maatwebsite\Excel\Concerns\WithHeadingRow;
@@ -19,11 +21,36 @@ class ObjekImport implements ToModel, WithHeadingRow, WithValidation, SkipsOnFai
 
     public function model(array $row)
     {
-        return new Objek([
+        // Simpan ke tabel objek
+        $objek = new Objek([
             'nisn'    => $row['nisn'],
             'nama'    => $row['nama_siswa'], // pastikan header Excel-nya "nama_siswa"
             'jenjang' => strtoupper($row['jenjang']), // handle kapitalisasi
         ]);
+
+        // Otomatis buat akun user jika belum ada
+        $nama = $row['nama_siswa'];
+        $email = strtolower(str_replace(' ', '_', $nama)) . '@santri.com';
+        $password = 'password123';
+
+        if (!User::where('email', $email)->exists()) {
+            $user = User::create([
+                'name'     => $nama,
+                'email'    => $email,
+                'password' => Hash::make($password),
+            ]);
+
+            // Ambil role_id untuk role 'santri'
+            $roleId = DB::table('roles')->where('name', 'santri')->value('id');
+
+            // Insert ke role_user
+            DB::table('role_user')->insert([
+                'user_id' => $user->id,
+                'role_id' => $roleId,
+            ]);
+        }
+
+        return $objek;
     }
 
     public function rules(): array

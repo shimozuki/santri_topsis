@@ -76,12 +76,24 @@ class ObjekController extends Controller
     public function hapus(Request $request)
     {
         try {
+            $objek = \App\Models\Objek::findOrFail($request->id);
+
+            $email = strtolower(str_replace(' ', '_', $objek->nama)) . '@santri.com';
+
+            $user = \App\Models\User::where('email', $email)->first();
+            if ($user) {
+                \DB::table('role_user')->where('user_id', $user->id)->delete();
+                $user->delete();
+            }
+
             $this->objekService->hapusPostData($request->id);
+
+            return redirect('dashboard/objek')->with('berhasil', "Data berhasil dihapus!");
         } catch (\Throwable $th) {
-            return abort(400);
+            return abort(400, 'Gagal menghapus data');
         }
-        return redirect('dashboard/objek')->with('berhasil', "Data berhasil diperbarui!");
     }
+
 
     public function import(Request $request)
     {
@@ -89,21 +101,20 @@ class ObjekController extends Controller
             'import_data' => 'required|mimes:xls,xlsx'
         ]);
 
-        try {
-            Excel::import(new ObjekImport, $request->file('import_data'));
+        $import = new ObjekImport;
 
-            return redirect()->back()->with('berhasil', 'Data berhasil di-import!');
-        } catch (ValidationException $e) {
-            $failures = $e->failures();
+        Excel::import($import, $request->file('import_data'));
+
+        if ($import->failures()->isNotEmpty()) {
             $messages = [];
 
-            foreach ($failures as $failure) {
+            foreach ($import->failures() as $failure) {
                 $messages[] = "Baris " . $failure->row() . ": " . implode(', ', $failure->errors());
             }
 
             return redirect()->back()->with('import_errors', $messages);
         }
 
-        \Log::error($messages);
+        return redirect()->back()->with('berhasil', 'Data berhasil di-import!');
     }
 }
